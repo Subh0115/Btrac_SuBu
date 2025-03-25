@@ -1,6 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
@@ -10,16 +13,15 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { type, name, amount, currentValue, purchaseDate } = body;
+        const { name, amount, type, date } = body;
 
-        const investment = await db.investment.create({
+        const investment = await prisma.investment.create({
             data: {
                 userId,
-                type,
                 name,
                 amount,
-                currentValue,
-                purchaseDate,
+                type,
+                date: new Date(date),
             },
         });
 
@@ -37,16 +39,12 @@ export async function GET(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { searchParams } = new URL(req.url);
-        const type = searchParams.get("type");
-
-        const where: any = { userId };
-        if (type) where.type = type;
-
-        const investments = await db.investment.findMany({
-            where,
+        const investments = await prisma.investment.findMany({
+            where: {
+                userId,
+            },
             orderBy: {
-                purchaseDate: "desc",
+                date: 'desc',
             },
         });
 
