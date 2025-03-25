@@ -5,9 +5,7 @@ import DashboardSidebar from "@/components/dashboard/dashboard-sidebar";
 import MobileSidebar from "@/components/dashboard/mobile-sidebar";
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
-import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default async function BudgetsPage() {
     const { userId } = auth();
@@ -28,95 +26,120 @@ export default async function BudgetsPage() {
         redirect("/auth/signin");
     }
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
+    // Group budgets by status
     const activeBudgets = user.budgets.filter(budget => new Date(budget.endDate) > new Date());
-    const pastBudgets = user.budgets.filter(budget => new Date(budget.endDate) <= new Date());
+    const expiredBudgets = user.budgets.filter(budget => new Date(budget.endDate) <= new Date());
 
     return (
         <div className="flex h-screen">
             <DashboardSidebar />
             <MobileSidebar />
             <main className="flex-1 overflow-y-auto p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-semibold">Budgets</h1>
-                    <Link href="/dashboard/budgets/new">
-                        <Button>
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            Add Budget
-                        </Button>
-                    </Link>
-                </div>
-
-                <div className="space-y-6">
-                    <div>
-                        <h2 className="text-lg font-medium mb-4">Active Budgets</h2>
+                <motion.div
+                    initial="hidden"
+                    animate="show"
+                    variants={container}
+                    className="space-y-8"
+                >
+                    <motion.div variants={item}>
+                        <h2 className="text-xl font-semibold mb-4">Active Budgets</h2>
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {activeBudgets.map((budget) => (
-                                <Card key={budget.id} className="p-6">
+                                <Card key={budget.id} className="p-6 hover:shadow-lg transition-shadow">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <h3 className="font-medium capitalize">{budget.category}</h3>
-                                            <p className="text-sm text-gray-500 capitalize">{budget.period}</p>
+                                            <h3 className="font-medium">{budget.name}</h3>
+                                            <p className="text-sm text-gray-500 capitalize">{budget.category.toLowerCase()}</p>
                                         </div>
-                                        <p className="text-2xl font-semibold">{formatCurrency(budget.amount)}</p>
+                                        <span className="text-sm text-gray-500">{budget.period}</span>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-500">Spent</span>
-                                            <span className="font-medium">{formatCurrency(budget.spent)}</span>
+                                            <span>Progress</span>
+                                            <span>{Math.round((budget.spent / budget.amount) * 100)}%</span>
                                         </div>
-                                        <div className="h-2 rounded-full bg-gray-200">
+                                        <div className="h-2 rounded-full bg-gray-100">
                                             <div
-                                                className="h-2 rounded-full bg-blue-600"
+                                                className={`h-2 rounded-full ${
+                                                    (budget.spent / budget.amount) > 0.9
+                                                        ? "bg-red-500"
+                                                        : (budget.spent / budget.amount) > 0.7
+                                                        ? "bg-yellow-500"
+                                                        : "bg-green-500"
+                                                }`}
                                                 style={{
                                                     width: `${Math.min((budget.spent / budget.amount) * 100, 100)}%`,
                                                 }}
                                             />
                                         </div>
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-500">Remaining</span>
-                                            <span className="font-medium">{formatCurrency(budget.amount - budget.spent)}</span>
+                                        <div className="flex items-center justify-between font-medium">
+                                            <span>{formatCurrency(budget.spent)}</span>
+                                            <span>{formatCurrency(budget.amount)}</span>
                                         </div>
+                                        <p className="text-sm text-gray-500">
+                                            Ends on {new Date(budget.endDate).toLocaleDateString()}
+                                        </p>
                                     </div>
                                 </Card>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <div>
-                        <h2 className="text-lg font-medium mb-4">Past Budgets</h2>
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {pastBudgets.map((budget) => (
-                                <Card key={budget.id} className="p-6">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div>
-                                            <h3 className="font-medium capitalize">{budget.category}</h3>
-                                            <p className="text-sm text-gray-500 capitalize">{budget.period}</p>
+                    {expiredBudgets.length > 0 && (
+                        <motion.div variants={item}>
+                            <h2 className="text-xl font-semibold mb-4">Past Budgets</h2>
+                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                {expiredBudgets.map((budget) => (
+                                    <Card key={budget.id} className="p-6 opacity-75">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h3 className="font-medium">{budget.name}</h3>
+                                                <p className="text-sm text-gray-500 capitalize">{budget.category.toLowerCase()}</p>
+                                            </div>
+                                            <span className="text-sm text-gray-500">{budget.period}</span>
                                         </div>
-                                        <p className="text-2xl font-semibold">{formatCurrency(budget.amount)}</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-500">Spent</span>
-                                            <span className="font-medium">{formatCurrency(budget.spent)}</span>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span>Final Status</span>
+                                                <span>{Math.round((budget.spent / budget.amount) * 100)}%</span>
+                                            </div>
+                                            <div className="h-2 rounded-full bg-gray-100">
+                                                <div
+                                                    className="h-2 rounded-full bg-gray-400"
+                                                    style={{
+                                                        width: `${Math.min((budget.spent / budget.amount) * 100, 100)}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between font-medium">
+                                                <span>{formatCurrency(budget.spent)}</span>
+                                                <span>{formatCurrency(budget.amount)}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-500">
+                                                Ended on {new Date(budget.endDate).toLocaleDateString()}
+                                            </p>
                                         </div>
-                                        <div className="h-2 rounded-full bg-gray-200">
-                                            <div
-                                                className="h-2 rounded-full bg-blue-600"
-                                                style={{
-                                                    width: `${Math.min((budget.spent / budget.amount) * 100, 100)}%`,
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-500">Remaining</span>
-                                            <span className="font-medium">{formatCurrency(budget.amount - budget.spent)}</span>
-                                        </div>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </motion.div>
             </main>
         </div>
     );
