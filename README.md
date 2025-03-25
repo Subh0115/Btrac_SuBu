@@ -92,16 +92,11 @@ To run BtrackiFiS locally, follow these steps:
     pnpm dev
     ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
 ## 📜 License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## 💬 Contact
 If you have any questions or feedback, feel free to reach out:
 - GitHub Issues: [Create an issue](https://github.com/Subh0115/Btrac_SuBu/issues)
-- Website: [btracsubu.vercel.app](https://btracsubu.vercel.app)
-
 ---
-
-Built with ❤️ by [Subhadeep Banerjee](https://btracsubu.vercel.app)
+Built with ❤️ by [Suyash Ahire]
