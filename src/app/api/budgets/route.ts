@@ -10,11 +10,16 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { category, amount, period, startDate, endDate } = body;
+        const { name, category, amount, period, startDate, endDate } = body;
+
+        if (!name) {
+            return new NextResponse("Name is required", { status: 400 });
+        }
 
         const budget = await db.budget.create({
             data: {
                 userId,
+                name,
                 category,
                 amount,
                 period,

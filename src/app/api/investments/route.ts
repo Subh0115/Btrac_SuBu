@@ -13,15 +13,20 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { name, amount, type, date } = body;
+        const { name, amount, currentValue, type, purchaseDate } = body;
 
-        const investment = await prisma.investment.create({
+        if (!name || !amount || !currentValue || !type || !purchaseDate) {
+            return new NextResponse("Missing required fields", { status: 400 });
+        }
+
+        const investment = await db.investment.create({
             data: {
                 userId,
                 name,
                 amount,
+                currentValue,
                 type,
-                date: new Date(date),
+                purchaseDate: new Date(purchaseDate),
             },
         });
 
@@ -39,12 +44,12 @@ export async function GET(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const investments = await prisma.investment.findMany({
+        const investments = await db.investment.findMany({
             where: {
                 userId,
             },
             orderBy: {
-                date: 'desc',
+                purchaseDate: "desc",
             },
         });
 
