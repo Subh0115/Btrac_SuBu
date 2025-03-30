@@ -25,16 +25,11 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-  VariantProps<typeof badgeVariants> {
-  circle?: boolean
-}
+    VariantProps<typeof badgeVariants> {}
 
-function Badge({circle, className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props}>
-      {circle && <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-t from-primary to-violet-400 animate-spin mr-1.5" />}
-      {props.children}
-    </div>
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
   )
 }
 

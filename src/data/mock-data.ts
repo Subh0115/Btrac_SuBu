@@ -165,4 +165,62 @@ export const mockTransactions = [
         status: "completed" as const,
         tags: ["transfer", "savings"]
     }
+];
+
+export const mockBudgets = [
+    {
+        id: "1",
+        name: "Monthly Groceries",
+        category: "food",
+        amount: 500,
+        spent: 350,
+        startDate: "2024-03-01",
+        endDate: "2024-03-31",
+        status: "active" as const,
+        transactions: ["1", "2", "3"],
+    },
+    {
+        id: "2",
+        name: "Entertainment",
+        category: "entertainment",
+        amount: 200,
+        spent: 180,
+        startDate: "2024-03-01",
+        endDate: "2024-03-31",
+        status: "active" as const,
+        transactions: ["4", "5"],
+    },
+    {
+        id: "3",
+        name: "Transportation",
+        category: "transportation",
+        amount: 300,
+        spent: 320,
+        startDate: "2024-03-01",
+        endDate: "2024-03-31",
+        status: "overdue" as const,
+        transactions: ["6", "7"],
+    },
+    {
+        id: "4",
+        name: "Utilities",
+        category: "utilities",
+        amount: 250,
+        spent: 250,
+        startDate: "2024-03-01",
+        endDate: "2024-03-31",
+        status: "completed" as const,
+        transactions: ["8"],
+    },
+    {
+        id: "5",
+        name: "Shopping",
+        category: "shopping",
+        amount: 400,
+        spent: 150,
+        startDate: "2024-03-01",
+        endDate: "2024-03-31",
+        status: "active" as const,
+        transactions: ["9", "10"],
+    },
 ]; 

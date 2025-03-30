@@ -1,11 +1,13 @@
-import { Metadata } from "next";
-import { BudgetContent } from "@/components/dashboard/budgets/budget-content";
+"use client";
 
-export const metadata: Metadata = {
-    title: "Budgets | BtrackiFiS",
-    description: "Manage your budgets and track spending",
-};
+import { BudgetsContent } from "@/components/dashboard/budgets/budgets-content";
+import { mockBudgets, mockAccounts } from "@/data/mock-data";
 
 export default function BudgetsPage() {
-    return <BudgetContent />;
+    return (
+        <BudgetsContent 
+            budgets={mockBudgets}
+            accounts={mockAccounts}
+        />
+    );
 } 
