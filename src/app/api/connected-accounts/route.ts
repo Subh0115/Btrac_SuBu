@@ -1,7 +1,23 @@
 import { NextResponse } from 'next/server';
 
+// Define types for our data
+type AccountType = 'bank' | 'credit' | 'investment' | 'crypto';
+type Institution = string;
+
+interface AccountData {
+  id?: string;
+  type: AccountType;
+  institution: string;
+  name: string;
+  accountNumber?: string;
+  cardNumber?: string;
+  walletAddress?: string;
+  isPrimary?: boolean;
+  status?: string;
+}
+
 // Mock data - replace with your actual database
-let connectedAccounts = [
+let connectedAccounts: AccountData[] = [
     {
         id: "1",
         type: "bank",
@@ -53,10 +69,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const data = await request.json();
+        const data = await request.json() as AccountData;
 
         // Validate connection type
-        const validTypes = ["bank", "credit", "investment", "crypto"];
+        const validTypes: AccountType[] = ["bank", "credit", "investment", "crypto"];
         if (!validTypes.includes(data.type)) {
             return NextResponse.json(
                 { message: "Invalid connection type" },
@@ -65,7 +81,7 @@ export async function POST(request: Request) {
         }
 
         // Validate institution based on type
-        const validInstitutions = {
+        const validInstitutions: Record<AccountType, string[]> = {
             bank: ["chase", "bankofamerica", "wellsfargo"],
             credit: ["visa", "mastercard"],
             investment: ["fidelity", "vanguard", "schwab"],
@@ -110,7 +126,15 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const data = await request.json();
+        const data = await request.json() as AccountData;
+
+        // Validate account ID
+        if (!data.id) {
+            return NextResponse.json(
+                { message: "Account ID is required" },
+                { status: 400 }
+            );
+        }
 
         // Validate account ID
         const accountIndex = connectedAccounts.findIndex(account => account.id === data.id);
