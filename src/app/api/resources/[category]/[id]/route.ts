@@ -1,7 +1,38 @@
 import { NextResponse } from 'next/server';
 
+// Define types for our resource data
+type ResourceCategory = 'documentation' | 'account' | 'training';
+
+interface BaseResource {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+}
+
+interface DocumentResource extends BaseResource {
+  content: string;
+  type: 'document';
+}
+
+interface VideoResource extends BaseResource {
+  content: string;
+  type: 'video';
+  duration: string;
+}
+
+interface TutorialResource extends BaseResource {
+  type: 'tutorial';
+  steps: string[];
+}
+
+type Resource = DocumentResource | VideoResource | TutorialResource;
+
+// We use Record utility type to define the structure
+type ResourcesType = Record<ResourceCategory, Record<string, Resource>>;
+
 // Mock data - replace with your actual database
-const resources = {
+const resources: ResourcesType = {
     documentation: {
         "1": {
             id: "1",
@@ -239,7 +270,17 @@ export async function GET(
     { params }: { params: { category: string; id: string } }
 ) {
     try {
-        const resource = resources[params.category]?.[params.id];
+        // Check if the category is valid
+        if (!['documentation', 'account', 'training'].includes(params.category)) {
+            return NextResponse.json(
+                { message: "Category not found" },
+                { status: 404 }
+            );
+        }
+
+        // Type assertion to help TypeScript understand this is a valid category
+        const category = params.category as ResourceCategory;
+        const resource = resources[category]?.[params.id];
         
         if (!resource) {
             return NextResponse.json(
