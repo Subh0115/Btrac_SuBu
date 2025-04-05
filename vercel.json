@@ -1,11 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
+  "buildCommand": "npx prisma generate --verbose && next build",
+  "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_APP_NAME": "BtrackiFiS",
     "NEXT_PUBLIC_APP_DOMAIN": "${NEXT_PUBLIC_APP_DOMAIN}",
