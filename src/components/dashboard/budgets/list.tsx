@@ -1,0 +1,1 @@
+<p className="text-sm text-muted-foreground">No budgets found. Click &apos;Create Budget&apos; to get started.</p> 

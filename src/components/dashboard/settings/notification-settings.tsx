@@ -1,0 +1,1 @@
+<p className="text-sm text-muted-foreground">Don&apos;t miss important updates about your budgets</p> 
